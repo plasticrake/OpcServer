@@ -1,0 +1,26 @@
+language: python
+python:
+    - "2.7"
+
+# Cache PlatformIO packages using Travis CI container-based infrastructure
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
+
+# Generated using: find examples -type f -name "*.ino" | rev | cut -d/ -f2- | rev | sed 's/^/    - PLATFORMIO_CI_SRC=/' > tmp.yml
+env:
+    - PLATFORMIO_CI_SRC=examples/simple/simple.ino
+
+install:
+    - pip install -U platformio
+
+    #
+    # Libraries from PlatformIO Library Registry:
+    #
+    # http://platformio.org/lib/show/17/Adafruit_CC3000
+    # http://platformio.org/lib/show/299/WiFi101
+    - platformio lib install 17 299
+
+script:
+    - platformio ci --lib="." --project-conf="platformio.ini"
