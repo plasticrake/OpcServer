@@ -19,9 +19,9 @@ If you've run this successfully on other boards let me know!
 # Installation
 
 ## Arduino IDE (1.6.9)
-1. In the Arduino IDE, Choose Sketch > Include Library > Manage Libraries.
-2. Search for OpcServer
-3. Click Install
+1. In the Arduino IDE, Choose **Sketch** > **Include Library** > **Manage Libraries**
+2. Search for **OpcServer**
+3. Click **Install**
 
 ## [PlatformIO](http://platformio.org/) (2.10.3)
 TODO

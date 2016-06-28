@@ -6,12 +6,12 @@
   {
     "name": "Patrick Seal",
     "email": "code@plasticrake.com",
-    "url": "https://github.com/platicrake"
+    "url": "https://github.com/plasticrake"
   },
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/platicrake/OpcServer.git"
+    "url": "https://github.com/plasticrake/OpcServer.git"
   },
   "frameworks": "arduino",
   "platforms": "*"
