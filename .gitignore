@@ -2,6 +2,8 @@
 .clang_complete
 .gcc-flags.json
 
+build/
+
 # Compiled Object files
 *.slo
 *.lo

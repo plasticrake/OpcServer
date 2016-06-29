@@ -1,5 +1,7 @@
 # OpcServer
 
+[![Build Status](https://travis-ci.org/plasticrake/OpcServer.svg?branch=master)](https://travis-ci.org/plasticrake/OpcServer)
+
 Open Pixel Control (OPC) server for Arduino.
 
 Compatible with boards that utilize Arduino style [WiFiServer](https://www.arduino.cc/en/Reference/WiFiServer) / [WiFiClient](https://www.arduino.cc/en/Reference/WiFiClient) APIs.
@@ -13,6 +15,7 @@ Compatible with boards that utilize Arduino style [WiFiServer](https://www.ardui
   - [Adafruit Feather M0 WiFi - ATSAMD21 + ATWINC1500](https://www.adafruit.com/product/3010) **(compiles, not tested)**
 - **Particle** (Formerly Spark)
   - [Photon](https://store.particle.io/)
+  - Core **(compiles, not tested)**
 
 If you've run this successfully on other boards let me know!
 
@@ -26,5 +29,5 @@ If you've run this successfully on other boards let me know!
 ## [PlatformIO](http://platformio.org/) (2.10.3)
 TODO
 
-## Particle Photon
-TODO
+## Particle
+1. Copy files from src/* into your project

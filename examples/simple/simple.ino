@@ -4,17 +4,18 @@
 // * At startup the device will output it's IP and OPC Port to Serial.
 // * Connect your OPC Client and send data. Received headers will be output to Serial.
 //==============================================================================
+#include "OpcServer.h"
 
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>
 #elif defined(PARTICLE) || defined(SPARK)
 #include "application.h"
+#define WiFiServer TCPServer
+#define WiFiClient TCPClient
 #else
 #include <SPI.h>
 #include <WiFi101.h>
 #endif
-
-#include "OpcServer.h"
 
 //==============================================================================
 // Configuration
@@ -73,14 +74,15 @@ OpcServer opcServer = OpcServer(server, OPC_CHANNEL, opcClients, OPC_MAX_CLIENTS
 void setup() {
   Serial.begin(115200);
 
+#if !defined(PARTICLE)
   if (WiFi.SSID() != WIFI_SSID) {
     WiFi.begin(WIFI_SSID, WIFI_PASS);
   }
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
+#endif
 
   opcServer.setMsgReceivedCallback(cbOpcMessage);
   opcServer.setClientConnectedCallback(cbOpcClientConnected);
