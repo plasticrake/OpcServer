@@ -10,14 +10,10 @@
 #define SERVER_BEGIN_BOOL 0
 //------------------------------------------------------------------------------
 
-#elif defined(PARTICLE) || defined(SPARK)
+#elif defined(PARTICLE)
 //==============================================================================
 // Particle
 //==============================================================================
-#ifndef PARTICLE
-#define PARTICLE
-#endif
-
 #define WiFiClient TCPClient
 #define WiFiServer TCPServer
 

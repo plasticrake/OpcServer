@@ -8,7 +8,7 @@
 
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>
-#elif defined(PARTICLE) || defined(SPARK)
+#elif defined(PARTICLE)
 #include "application.h"
 #define WiFiServer TCPServer
 #define WiFiClient TCPClient
@@ -49,7 +49,7 @@ void cbOpcMessage(uint8_t channel, uint8_t command, uint8_t length, uint8_t* dat
 // Callback when a client is connected
 void cbOpcClientConnected(WiFiClient& client) {
   Serial.print("New OPC Client: ");
-#if defined(ESP8266) || defined(PARTICLE) || defined(SPARK)
+#if defined(ESP8266) || defined(PARTICLE)
   Serial.println(client.remoteIP());
 #else
   Serial.println("(IP Unknown)");

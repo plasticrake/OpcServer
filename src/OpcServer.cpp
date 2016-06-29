@@ -140,6 +140,7 @@ void OpcServer::opcRead(OpcClient& opcClient, size_t len) {
     if (opcClient.bufferBytesToDiscard > 0 || len == 0) {
       // waiting for more bytes to discard OR no more bytes to read
       debug_sprint(F("Waiting for bytes to discard\n"));
+      return;
     } else {
       warn_sprint(F("=== DISCARD DONE ===\n"));
     }

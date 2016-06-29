@@ -14,20 +14,20 @@ Compatible with boards that utilize Arduino style [WiFiServer](https://www.ardui
   - [Arduino Zero](https://www.arduino.cc/en/Main/ArduinoBoardZero) with [WiFi Shield 101](https://www.arduino.cc/en/Main/ArduinoWiFiShield101) **(compiles, not tested)**
   - [Adafruit Feather M0 WiFi - ATSAMD21 + ATWINC1500](https://www.adafruit.com/product/3010) **(compiles, not tested)**
 - **Particle** (Formerly Spark)
-  - [Photon](https://store.particle.io/)
-  - Core **(compiles, not tested)**
+  - [Photon](https://docs.particle.io/datasheets/photon-datasheet/)
+  - [Core](https://docs.particle.io/datasheets/core-datasheet/) **(compiles, not tested)**
 
 If you've run this successfully on other boards let me know!
 
 # Installation
 
-## Arduino IDE (1.6.9)
+## Arduino IDE
 1. In the Arduino IDE, Choose **Sketch** > **Include Library** > **Manage Libraries**
 2. Search for **OpcServer**
 3. Click **Install**
 
-## [PlatformIO](http://platformio.org/) (2.10.3)
-TODO
+## [PlatformIO](http://platformio.org/lib/show/350/OpcServer)
+1. platformio lib install 350
 
 ## Particle
 1. Copy files from src/* into your project
