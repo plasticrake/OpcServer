@@ -26,14 +26,15 @@ class OpcServer {
   uint32_t getBufferSize() const;
   uint16_t getBufferSizeInPixels() const;
 
+  uint32_t getBytesAvailable() const;
+
   void setMsgReceivedCallback(OpcMsgReceivedCallback opcMsgReceivedCallback);
   void setClientConnectedCallback(OpcClientConnectedCallback opcClientConnectedCallback);
   void setClientDisconnectedCallback(OpcClientDisconnectedCallback opcClientDisconnectedCallback);
 
  private:
   bool processClient(OpcClient& opcClient);
-  void opcRead(OpcClient& opcClient, size_t len);
-  uint8_t opcReadFadeCandy(OpcClient& opcClient, size_t len);
+  void opcRead(OpcClient& opcClient);
 
   OpcClient* opcClients_;
 

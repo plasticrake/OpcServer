@@ -41,6 +41,14 @@ uint16_t OpcServer::getBufferSizeInPixels() const {
   return ((bufferSize_ - OPC_HEADER_BYTES) / 3);
 }
 
+uint32_t OpcServer::getBytesAvailable() const {
+  uint32_t b = 0;
+  for (size_t i = 0; i < clientSize_; i++) {
+    b += opcClients_[i].bytesAvailable;
+  }
+  return b;
+}
+
 void OpcServer::setMsgReceivedCallback(OpcMsgReceivedCallback opcMsgReceivedCallback) {
   opcMsgReceivedCallback_ = opcMsgReceivedCallback;
 }
@@ -74,6 +82,7 @@ void OpcServer::process() {
     } else if (opcClients_[i].state == OpcClient::CLIENT_STATE_CONNECTED) {
       opcClients_[i].state = OpcClient::CLIENT_STATE_DISCONNECTED;
       opcClients_[i].tcpClient.stop();
+      opcClients_[i].bytesAvailable = 0;
       opcClientDisconnectedCallback_(opcClients_[i]);
     }
   }
@@ -94,6 +103,7 @@ void OpcServer::process() {
             opcClientDisconnectedCallback_(opcClients_[i]);
           }
           opcClients_[i].tcpClient.stop();
+          opcClients_[i].bytesAvailable = 0;
           opcClients_[i].tcpClient = tcpClient;
 #if HAS_REMOTE_IP
           opcClients_[i].ipAddress = tcpClient.remoteIP();
@@ -110,9 +120,8 @@ bool OpcServer::processClient(OpcClient& opcClient) {
   if (opcClient.tcpClient.connected()) {
     opcClient.state = OpcClient::CLIENT_STATE_CONNECTED;
 
-    size_t len;
-    if ((len = opcClient.tcpClient.available()) > 0) {
-      opcRead(opcClient, len);
+    if ((opcClient.bytesAvailable = opcClient.tcpClient.available()) > 0) {
+      opcRead(opcClient);
       perf_sprint("*");
     } else {
       perf_sprint(".");
@@ -122,22 +131,22 @@ bool OpcServer::processClient(OpcClient& opcClient) {
   return false;
 }
 
-void OpcServer::opcRead(OpcClient& opcClient, size_t len) {
+void OpcServer::opcRead(OpcClient& opcClient) {
   size_t readLen;
 
   WiFiClient client = opcClient.tcpClient;
   uint8_t* buf = opcClient.buffer;
 
   if (opcClient.bufferBytesToDiscard > 0) {
-    warn_sprint(F("*** DISCARDING BYTES *** bytesToDiscard: "), opcClient.bufferBytesToDiscard, F(" len: "), len);
+    warn_sprint(F("*** DISCARDING BYTES *** bytesToDiscard: "), opcClient.bufferBytesToDiscard, F(" bytesAvailable: "), opcClient.bytesAvailable);
     warn_sprint(F(" buffersize: "), bufferSize_, '\n');
-    while (opcClient.bufferBytesToDiscard > 0 && len > 0) {
-      readLen = client.read((uint8_t*)buf, min(len, min(opcClient.bufferBytesToDiscard, bufferSize_)));
+    while (opcClient.bufferBytesToDiscard > 0 && opcClient.bytesAvailable > 0) {
+      readLen = client.read((uint8_t*)buf, min(opcClient.bytesAvailable, min(opcClient.bufferBytesToDiscard, bufferSize_)));
       if (readLen == 0) { break; }
-      len -= readLen;
+      opcClient.bytesAvailable -= readLen;
       opcClient.bufferBytesToDiscard -= readLen;
     }
-    if (opcClient.bufferBytesToDiscard > 0 || len == 0) {
+    if (opcClient.bufferBytesToDiscard > 0 || opcClient.bytesAvailable == 0) {
       // waiting for more bytes to discard OR no more bytes to read
       debug_sprint(F("Waiting for bytes to discard\n"));
       return;
@@ -148,7 +157,7 @@ void OpcServer::opcRead(OpcClient& opcClient, size_t len) {
 
   if (opcClient.bufferLength < OPC_HEADER_BYTES) {
     // Read Header
-    readLen = client.read((uint8_t*)buf + opcClient.bufferLength, min(len, OPC_HEADER_BYTES));
+    readLen = client.read((uint8_t*)buf + opcClient.bufferLength, min(opcClient.bytesAvailable, OPC_HEADER_BYTES));
     opcClient.bufferLength += readLen;
 
     if (opcClient.bufferLength < OPC_HEADER_BYTES) {
@@ -167,7 +176,7 @@ void OpcServer::opcRead(OpcClient& opcClient, size_t len) {
   uint32_t msgLength = OPC_HEADER_BYTES + dataLength;
   uint32_t adjMsgLength = min(msgLength, bufferSize_);
 
-  readLen = client.read((uint8_t*)buf + opcClient.bufferLength, min(len, adjMsgLength - opcClient.bufferLength));
+  readLen = client.read((uint8_t*)buf + opcClient.bufferLength, min(opcClient.bytesAvailable, adjMsgLength - opcClient.bufferLength));
   opcClient.bufferLength += readLen;
 
   if (opcClient.bufferLength < adjMsgLength) {

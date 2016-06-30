@@ -41,11 +41,12 @@ struct OpcClient {
     CLIENT_STATE_CONNECTED
   };
 
-  OpcClient() : ipAddress((uint32_t)0), state(CLIENT_STATE_DISCONNECTED), bufferBytesToDiscard(0), bufferLength(0), bufferSize(0), buffer(0) {}
+  OpcClient() : ipAddress((uint32_t)0), state(CLIENT_STATE_DISCONNECTED), bytesAvailable(0), bufferBytesToDiscard(0), bufferLength(0), bufferSize(0), buffer(0) {}
 
   WiFiClient tcpClient;
   IPAddress ipAddress;
   ClientState state;
+  uint32_t bytesAvailable;
   uint32_t bufferBytesToDiscard;
   uint32_t bufferLength;
   uint32_t bufferSize;
