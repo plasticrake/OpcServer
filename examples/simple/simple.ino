@@ -37,7 +37,7 @@ const int OPC_BUFFER_SIZE = OPC_MAX_PIXELS * 3 + OPC_HEADER_BYTES;
 //------------------------------------------------------------------------------
 
 // Callback when a full OPC Message has been received
-void cbOpcMessage(uint8_t channel, uint8_t command, uint8_t length, uint8_t* data) {
+void cbOpcMessage(uint8_t channel, uint8_t command, uint16_t length, uint8_t* data) {
   Serial.print("chn:");
   Serial.print(channel);
   Serial.print("cmd:");

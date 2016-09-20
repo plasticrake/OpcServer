@@ -13,7 +13,7 @@ class OpcServer {
             uint8_t clientSize,
             uint8_t buffer[],
             uint32_t bufferSize,
-            OpcMsgReceivedCallback opcMsgReceivedCallback = [](uint8_t channel, uint8_t command, uint8_t length, uint8_t* data) -> void {},
+            OpcMsgReceivedCallback opcMsgReceivedCallback = [](uint8_t channel, uint8_t command, uint16_t length, uint8_t* data) -> void {},
             OpcClientConnectedCallback opcClientConnectedCallback = [](WiFiClient&) -> void {},
             OpcClientDisconnectedCallback opcClientDisconnectedCallback = [](OpcClient&) -> void {});
 
