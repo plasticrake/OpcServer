@@ -53,6 +53,6 @@ struct OpcClient {
   uint8_t* buffer;
 };
 
-typedef void (*OpcMsgReceivedCallback)(uint8_t channel, uint8_t command, uint8_t length, uint8_t* data);
+typedef void (*OpcMsgReceivedCallback)(uint8_t channel, uint8_t command, uint16_t length, uint8_t* data);
 typedef void (*OpcClientConnectedCallback)(WiFiClient&);
 typedef void (*OpcClientDisconnectedCallback)(OpcClient&);
