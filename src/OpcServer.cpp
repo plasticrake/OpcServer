@@ -163,6 +163,7 @@ void OpcServer::opcRead(OpcClient& opcClient) {
     if (opcClient.bufferLength < OPC_HEADER_BYTES) {
       // Still waiting for a header
       debug_sprint(F("Waiting for Header\n"));
+      return;
     }
   }
 
@@ -182,6 +183,7 @@ void OpcServer::opcRead(OpcClient& opcClient) {
   if (opcClient.bufferLength < adjMsgLength) {
     // Waiting for more data
     debug_sprint("Waiting for more data\n");
+    return;
   }
 
   // Full OPC Message Read
