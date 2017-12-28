@@ -1,6 +1,10 @@
 #include "OpcServer.h"
 #include "Definitions.h"
 
+#if defined(ESP32)
+#include "ESPmDNS.h"
+#endif
+
 OpcServer::OpcServer(WiFiServer& server,
                      uint8_t opcChannel,
                      OpcClient opcClients[],
@@ -163,6 +167,7 @@ void OpcServer::opcRead(OpcClient& opcClient) {
     if (opcClient.bufferLength < OPC_HEADER_BYTES) {
       // Still waiting for a header
       debug_sprint(F("Waiting for Header\n"));
+      return;
     }
   }
 
@@ -182,6 +187,7 @@ void OpcServer::opcRead(OpcClient& opcClient) {
   if (opcClient.bufferLength < adjMsgLength) {
     // Waiting for more data
     debug_sprint("Waiting for more data\n");
+    return;
   }
 
   // Full OPC Message Read
@@ -193,3 +199,11 @@ void OpcServer::opcRead(OpcClient& opcClient) {
   // Set to discard remaining bytes on next call
   opcClient.bufferBytesToDiscard = msgLength - adjMsgLength;
 }
+
+#if defined(ESP32)
+void OpcServer::mDNSBegin(String hostname) {
+  // This may fail if MDNS.begin() has already been called
+  MDNS.begin(hostname.c_str());
+  MDNS.addService("_openpixelctrl", "_tcp", 7890);
+}
+#endif

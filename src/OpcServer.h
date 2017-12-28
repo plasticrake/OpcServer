@@ -30,6 +30,10 @@ class OpcServer {
   void setClientDisconnectedCallback(OpcClientDisconnectedCallback opcClientDisconnectedCallback);
   void setMsgReceivedCallback(OpcMsgReceivedCallback opcMsgReceivedCallback);
 
+#if defined(ESP32)
+  void mDNSBegin(String hostname);
+#endif
+
  private:
   bool processClient(OpcClient& opcClient);
   void opcRead(OpcClient& opcClient);
