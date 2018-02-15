@@ -1,5 +1,6 @@
 {
   "name": "OpcServer",
+  "version": "1.1.0",
   "description": "Open Pixel Control (OPC) Server Library for Arduino Platform",
   "keywords": "led,pixel,pixels,opc,openpixelcontrol,fadecandy,esp8266,wifi,communication,protocol,server",
   "repository":
@@ -8,5 +9,8 @@
     "url": "https://github.com/plasticrake/OpcServer.git"
   },
   "frameworks": "arduino",
-  "platforms": "*"
+  "platforms": "*",
+  "build": {
+    "libLDFMode": "chain+"
+  }
 }
