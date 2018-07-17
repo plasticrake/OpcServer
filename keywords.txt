@@ -6,18 +6,18 @@
 
 OpcServer	KEYWORD1
 OpcClient	KEYWORD1
-OpcMessage KEYWORD1
+OpcMessage	KEYWORD1
 
 #######################################
 # Methods and Functions
 #######################################
 
-begin KEYWORD2
+begin	KEYWORD2
 process	KEYWORD2
 
 getBufferSize	KEYWORD2
 getBufferSizeInPixels	KEYWORD2
-getBytesAvailable KEYWORD2
+getBytesAvailable	KEYWORD2
 getClientCount	KEYWORD2
 getClientSize	KEYWORD2
 
@@ -28,10 +28,10 @@ setMsgReceivedCallback	KEYWORD2
 #######################################
 # Constants
 #######################################
-OPC_SET_PIXEL_COLORS			LITERAL1
-OPC_SYSTEM_EXCLUSIVE		LITERAL1
+OPC_SET_PIXEL_COLORS	LITERAL1
+OPC_SYSTEM_EXCLUSIVE	LITERAL1
 
-OPC_GLOBAL_COLOR_CORRECTION		LITERAL1
-OPC_FIRMWARE_CONFIGURATION		LITERAL1
+OPC_GLOBAL_COLOR_CORRECTION	LITERAL1
+OPC_FIRMWARE_CONFIGURATION	LITERAL1
 
-OPC_HEADER_BYTES			LITERAL1
+OPC_HEADER_BYTES	LITERAL1
