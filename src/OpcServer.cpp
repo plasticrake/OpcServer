@@ -136,60 +136,42 @@ void OpcServer::opcRead(OpcClient& opcClient) {
 
   WiFiClient client = opcClient.tcpClient;
   uint8_t* buf = opcClient.buffer;
+  uint32_t msgLength = 0;
 
-  if (opcClient.bufferBytesToDiscard > 0) {
-    warn_sprint(F("*** DISCARDING BYTES *** bytesToDiscard: "), opcClient.bufferBytesToDiscard, F(" bytesAvailable: "), opcClient.bytesAvailable);
-    warn_sprint(F(" buffersize: "), bufferSize_, '\n');
-    while (opcClient.bufferBytesToDiscard > 0 && opcClient.bytesAvailable > 0) {
-      readLen = client.read((uint8_t*)buf, min(opcClient.bytesAvailable, min(opcClient.bufferBytesToDiscard, bufferSize_)));
-      if (readLen == 0) { break; }
-      opcClient.bytesAvailable -= readLen;
-      opcClient.bufferBytesToDiscard -= readLen;
-    }
-    if (opcClient.bufferBytesToDiscard > 0 || opcClient.bytesAvailable == 0) {
-      // waiting for more bytes to discard OR no more bytes to read
-      debug_sprint(F("Waiting for bytes to discard\n"));
-      return;
-    } else {
-      warn_sprint(F("=== DISCARD DONE ===\n"));
-    }
-  }
-
-  if (opcClient.bufferLength < OPC_HEADER_BYTES) {
-    // Read Header
-    readLen = client.read((uint8_t*)buf + opcClient.bufferLength, min(opcClient.bytesAvailable, OPC_HEADER_BYTES));
+  if(opcClient.bytesAvailable < opcClient.header.dataLength) {
+    readLen = client.read((uint8_t*)buf + opcClient.bufferLength, opcClient.bytesAvailable);
     opcClient.bufferLength += readLen;
+    msgLength = OPC_HEADER_BYTES + opcClient.header.dataLength;
+    debug_sprint("Received TCP with ", opcClient.bytesAvailable,  "Bytes Appended to buffer now at ", opcClient.bufferLength, " data bytes\n");
+  } else {
+    // We have a header! Read Msg
+    debug_sprint("New Data Packet\n");
+    opcClient.header.channel = buf[0];
+    opcClient.header.command = buf[1];
+    opcClient.header.lenHigh = buf[2];
+    opcClient.header.lenLow = buf[3];
+    opcClient.header.dataLength = opcClient.header.lenLow | (unsigned(opcClient.header.lenHigh) << 8);
 
-    if (opcClient.bufferLength < OPC_HEADER_BYTES) {
-      // Still waiting for a header
-      debug_sprint(F("Waiting for Header\n"));
-    }
+    msgLength = OPC_HEADER_BYTES + opcClient.header.dataLength;
+
+    readLen = client.read((uint8_t*)buf + opcClient.bufferLength, opcClient.bytesAvailable);
+    opcClient.bufferLength += readLen;
   }
 
-  // We have a header! Read Msg
-  uint8_t channel = buf[0];
-  uint8_t command = buf[1];
-  uint8_t lenHigh = buf[2];
-  uint8_t lenLow = buf[3];
-  uint16_t dataLength = lenLow | (unsigned(lenHigh) << 8);
-
-  uint32_t msgLength = OPC_HEADER_BYTES + dataLength;
-  uint32_t adjMsgLength = min(msgLength, bufferSize_);
-
-  readLen = client.read((uint8_t*)buf + opcClient.bufferLength, min(opcClient.bytesAvailable, adjMsgLength - opcClient.bufferLength));
-  opcClient.bufferLength += readLen;
-
-  if (opcClient.bufferLength < adjMsgLength) {
+  if (opcClient.bufferLength < msgLength) {
     // Waiting for more data
-    debug_sprint("Waiting for more data\n");
+    debug_sprint("Waiting for more data only Received ", opcClient.bufferLength, "\n");
+  } else {
+    // Full OPC Message Read
+    debug_sprint("Received Complete Data Packet\n");
+    opcMsgReceivedCallback_(opcClient.header.channel, opcClient.header.command, opcClient.header.dataLength, buf + OPC_HEADER_BYTES);
+
+    // Set to start buffer over on next call
+    opcClient.bufferLength = 0;
+    opcClient.header.channel = 0;
+    opcClient.header.command = 0;
+    opcClient.header.lenHigh = 0;
+    opcClient.header.lenLow = 0;
+    opcClient.header.dataLength = 0;
   }
-
-  // Full OPC Message Read
-  opcMsgReceivedCallback_(channel, command, dataLength, buf + OPC_HEADER_BYTES);
-
-  // Set to start buffer over on next call
-  opcClient.bufferLength = 0;
-
-  // Set to discard remaining bytes on next call
-  opcClient.bufferBytesToDiscard = msgLength - adjMsgLength;
 }

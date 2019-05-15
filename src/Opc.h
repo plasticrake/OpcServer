@@ -15,24 +15,16 @@ enum OpcSysEx {
 
 static const uint8_t OPC_HEADER_BYTES = 4;
 
-template <class T, int _size>
-struct OpcMessage {
-  OpcMessage() : channel(0), command(0), lenHigh(0), lenLow(0) {}
+struct OpcHeader {
 
-  uint16_t getLength() const {
-    return lenLow | (unsigned(lenHigh) << 8);
-  }
-
-  void setLength(unsigned l) {
-    lenLow = (uint8_t)l;
-    lenHigh = (uint8_t)(l >> 8);
+  OpcHeader() : channel(0), command(0), lenHigh(0), lenLow(0), dataLength(0) {
   }
 
   uint8_t channel;
   uint8_t command;
   uint8_t lenHigh;
   uint8_t lenLow;
-  T data[_size];
+  uint16_t dataLength;
 };
 
 struct OpcClient {
@@ -41,11 +33,12 @@ struct OpcClient {
     CLIENT_STATE_CONNECTED
   };
 
-  OpcClient() : ipAddress((uint32_t)0), state(CLIENT_STATE_DISCONNECTED), bytesAvailable(0), bufferBytesToDiscard(0), bufferLength(0), bufferSize(0), buffer(0) {}
+  OpcClient() : ipAddress((uint32_t)0), state(CLIENT_STATE_DISCONNECTED), header(OpcHeader()), bytesAvailable(0), bufferBytesToDiscard(0), bufferLength(0), bufferSize(0), buffer(0) {}
 
   WiFiClient tcpClient;
   IPAddress ipAddress;
   ClientState state;
+  OpcHeader header;
   uint32_t bytesAvailable;
   uint32_t bufferBytesToDiscard;
   uint32_t bufferLength;
